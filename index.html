@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Drapeaux du Monde</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Apprends les 197 drapeaux du monde avec quatre niveaux de difficulté.">
+<link rel="icon" href="flags/fr.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Mise en page : une colonne d'application centrée, comme un carnet de bord ; l'accent vient des pavillons de signalisation maritime */
+:root {
+  --bg: #EDF0F5;
+  --surface: #FFFFFF;
+  --surface-2: #F5F7FA;
+  --ink: #0E1B2C;
+  --muted: #5A6678;
+  --line: #D6DDE7;
+  --accent: #1F4FD8;
+  --accent-ink: #FFFFFF;
+  --signal: #F2B705;
+  --good: #128548;
+  --good-bg: #E3F5EA;
+  --bad: #CF3328;
+  --bad-bg: #FCE8E6;
+  --shadow: 0 1px 2px rgba(14,27,44,.06), 0 8px 24px rgba(14,27,44,.08);
+  --f-display: "Bricolage Grotesque", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1220; --surface: #121D2F; --surface-2: #17243A; --ink: #E7ECF4; --muted: #95A2B6; --line: #26354D;
+    --accent: #7097FF; --accent-ink: #0A1220; --signal: #FFC93C; --good: #43CF85; --good-bg: #123526;
+    --bad: #FF6E61; --bad-bg: #3A1B1C; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1220; --surface: #121D2F; --surface-2: #17243A; --ink: #E7ECF4; --muted: #95A2B6; --line: #26354D;
+  --accent: #7097FF; --accent-ink: #0A1220; --signal: #FFC93C; --good: #43CF85; --good-bg: #123526;
+  --bad: #FF6E61; --bad-bg: #3A1B1C; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+img { max-width: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.app { max-width: 760px; margin: 0 auto; padding-block: 20px 48px; display: flex; flex-direction: column; gap: 20px; }
+
+/* En-tête */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; text-align: left; }
+.brand-mark { width: 34px; height: 34px; border-radius: 8px; display: grid; grid-template: 1fr 1fr / 1fr 1fr; overflow: hidden; box-shadow: var(--shadow); flex: none; }
+.brand-mark i:nth-child(1) { background: var(--signal); } .brand-mark i:nth-child(2) { background: var(--accent); }
+.brand-mark i:nth-child(3) { background: var(--accent); } .brand-mark i:nth-child(4) { background: var(--signal); }
+.brand-name { font: 800 1.2rem/1 var(--f-display); letter-spacing: -.01em; }
+.icon-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; }
+.icon-btn svg { width: 20px; height: 20px; }
+
+/* Bandeau de drapeaux */
+.hero { display: flex; flex-direction: column; gap: 14px; }
+.hero h1 { font: 800 clamp(2rem, 7vw, 3.4rem)/1 var(--f-display); letter-spacing: -.025em; margin: 0; text-wrap: balance; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p { margin: 0; color: var(--muted); max-width: 52ch; }
+.marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee-track { display: flex; gap: 10px; width: max-content; animation: slide 90s linear infinite; }
+.marquee img { width: 52px; height: 39px; border-radius: 5px; object-fit: cover; box-shadow: 0 0 0 1px var(--line); }
+@keyframes slide { to { transform: translateX(-50%); } }
+
+/* Progression */
+.progress-card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.pc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.pc-head strong { font: 800 1.6rem/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.pc-head strong small { font: 600 1rem var(--f-body); color: var(--muted); }
+.label { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.bar { height: 10px; background: var(--surface-2); border-radius: 99px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+.bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--signal)); border-radius: 99px; width: 0; transition: width .6s ease; }
+.continents { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.cont { display: flex; flex-direction: column; gap: 4px; font-size: .78rem; color: var(--muted); min-width: 0; }
+.cont b { color: var(--ink); font: 700 .8rem var(--f-mono); }
+.cont .bar { height: 5px; }
+
+/* Choix */
+section.block { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; gap: 10px; }
+.choices.two { grid-template-columns: repeat(2, 1fr); }
+.choices.four { grid-template-columns: repeat(4, 1fr); }
+.tile { text-align: left; background: var(--surface); border: 2px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 4px; transition: border-color .15s, transform .15s, background .15s; min-width: 0; }
+.tile:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.tile[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.tile .t { font: 700 1.02rem/1.2 var(--f-display); }
+.tile .d { font-size: .82rem; color: var(--muted); line-height: 1.35; }
+.tile .meta { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
+.pips { display: inline-flex; gap: 3px; }
+.pips i { width: 8px; height: 8px; border-radius: 2px; background: var(--line); }
+.pips i.on { background: var(--signal); }
+.best { font: 500 .72rem var(--f-mono); color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); border-radius: 99px; padding: 6px 14px; font-weight: 600; font-size: .9rem; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.row2 { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+
+.cta { display: flex; flex-direction: column; gap: 10px; }
+.btn { border: 0; border-radius: 12px; padding: 14px 20px; font-weight: 700; font-size: 1rem; display: inline-flex; justify-content: center; align-items: center; gap: 8px; transition: transform .1s, filter .15s; }
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); font: 800 1.15rem var(--f-display); padding: 16px 20px; box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 35%, transparent); }
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-ghost { background: var(--surface); border: 1.5px solid var(--line); }
+.btn-ghost:disabled { opacity: .5; cursor: default; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.count-badge { font: 700 .75rem var(--f-mono); background: var(--bad); color: #fff; border-radius: 99px; padding: 1px 8px; }
+
+/* Partie */
+.hud { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; }
+.hud-mid { display: flex; flex-direction: column; gap: 6px; }
+.hud-line { display: flex; justify-content: space-between; font: 600 .82rem var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.score-box { text-align: right; }
+.score-box b { display: block; font: 800 1.4rem/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.streak { font: 700 .78rem var(--f-mono); color: var(--signal); min-height: 1em; }
+.timer { height: 4px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.timer i { display: block; height: 100%; width: 100%; background: var(--signal); transform-origin: left; }
+
+.stage { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); padding: 22px; display: flex; flex-direction: column; gap: 18px; align-items: center; }
+.prompt { font: 600 .95rem var(--f-body); color: var(--muted); text-align: center; margin: 0; }
+.flag-frame { width: min(100%, 420px); aspect-ratio: 4 / 3; max-width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px var(--line), 0 12px 30px rgba(14,27,44,.18); background: var(--surface-2); }
+.flag-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.country-q { font: 800 clamp(1.8rem, 6vw, 2.8rem)/1.05 var(--f-display); text-align: center; text-wrap: balance; letter-spacing: -.02em; }
+.pop { animation: pop .35s ease; }
+@keyframes pop { from { transform: scale(.94); opacity: .3; } }
+
+.options { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.opt { position: relative; border: 2px solid var(--line); background: var(--surface); border-radius: 12px; padding: 14px 12px 14px 40px; font-weight: 600; font-size: 1rem; text-align: left; min-height: 56px; transition: border-color .12s, background .12s, transform .1s; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .k { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); font: 700 .72rem/20px var(--f-mono); text-align: center; color: var(--muted); }
+.opt.flag-opt { padding: 8px; display: flex; }
+.opt.flag-opt img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; box-shadow: 0 0 0 1px var(--line); display: block; }
+.opt.flag-opt .k { top: 14px; left: 14px; transform: none; background: var(--surface); }
+.opt.correct { border-color: var(--good); background: var(--good-bg); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-bg); animation: shake .35s; }
+.opt.dim { opacity: .45; }
+.opt:disabled { cursor: default; }
+@keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.options.six { grid-template-columns: repeat(3, 1fr); }
+
+.typing { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.typing-row { display: flex; gap: 8px; }
+.typing input { flex: 1; min-width: 0; font: 600 1.1rem var(--f-body); padding: 14px 16px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.typing input:focus { outline: none; border-color: var(--accent); }
+.typing input.ok { border-color: var(--good); background: var(--good-bg); }
+.typing input.ko { border-color: var(--bad); background: var(--bad-bg); animation: shake .35s; }
+.hint-line { font: 600 1rem var(--f-mono); letter-spacing: .12em; color: var(--muted); text-align: center; min-height: 1.5em; }
+.typing-tools { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.btn-small { padding: 8px 14px; font-size: .88rem; border-radius: 10px; }
+
+.feedback { width: 100%; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+.feedback.ok { background: var(--good-bg); }
+.feedback.ko { background: var(--bad-bg); }
+.feedback img { width: 56px; height: 42px; object-fit: cover; border-radius: 4px; box-shadow: 0 0 0 1px var(--line); flex: none; }
+.fb-text { flex: 1; min-width: 0; }
+.fb-title { font: 800 1.05rem var(--f-display); }
+.feedback.ok .fb-title { color: var(--good); } .feedback.ko .fb-title { color: var(--bad); }
+.fb-sub { font-size: .88rem; color: var(--muted); }
+.iso { font: 700 .72rem var(--f-mono); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--muted); }
+.next-btn { flex: none; }
+
+/* Fin de partie */
+.end { text-align: center; align-items: stretch; }
+.stars { display: flex; justify-content: center; gap: 6px; }
+.stars svg { width: 44px; height: 44px; }
+.stars svg path { fill: var(--line); }
+.stars svg.on path { fill: var(--signal); }
+.stars svg.on { animation: pop .4s ease backwards; }
+.end h2 { font: 800 2rem/1.1 var(--f-display); margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: var(--surface-2); border-radius: 12px; padding: 12px 8px; }
+.stat b { display: block; font: 800 1.5rem var(--f-display); font-variant-numeric: tabular-nums; }
+.stat span { font-size: .78rem; color: var(--muted); }
+.record { font-weight: 700; color: var(--accent); }
+.mistakes { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; text-align: left; }
+.mistake { display: flex; gap: 8px; align-items: center; background: var(--surface-2); border-radius: 10px; padding: 6px; font-size: .85rem; font-weight: 600; min-width: 0; }
+.mistake img { width: 40px; height: 30px; object-fit: cover; border-radius: 3px; flex: none; box-shadow: 0 0 0 1px var(--line); }
+.mistake span { min-width: 0; overflow-wrap: anywhere; }
+
+/* Atlas */
+.explore-head { display: flex; flex-direction: column; gap: 10px; }
+.explore-head h2 { font: 800 1.8rem/1 var(--f-display); margin: 0; }
+.search { font: 500 1rem var(--f-body); padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border-radius: 12px; padding: 10px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; box-shadow: 0 0 0 1px var(--line); }
+.card .n { font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.card .c { font-size: .8rem; color: var(--muted); display: flex; justify-content: space-between; gap: 6px; align-items: center; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); flex: none; }
+.dot.l1 { background: var(--signal); } .dot.l2, .dot.l3 { background: var(--good); }
+.legend { display: flex; gap: 14px; font-size: .8rem; color: var(--muted); flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.empty { color: var(--muted); text-align: center; padding: 30px 0; }
+
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; width: 100%; height: 100%; }
+.foot { text-align: center; font-size: .78rem; color: var(--muted); }
+.foot a { color: inherit; }
+
+@media (max-width: 640px) {
+  .choices.four { grid-template-columns: repeat(2, 1fr); }
+  .continents { grid-template-columns: repeat(3, 1fr); }
+  .row2 { grid-template-columns: 1fr; }
+  .options.six { grid-template-columns: repeat(2, 1fr); }
+  .stage { padding: 16px; }
+}
+@media (max-width: 380px) {
+  .options:not(.flags) { grid-template-columns: 1fr; }
+  .choices.two { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<canvas id="confetti" hidden></canvas>
+<div class="app">
+  <header class="top">
+    <button class="brand" id="homeBtn" aria-label="Accueil">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="brand-name">Drapeaux du Monde</span>
+    </button>
+    <button class="icon-btn" id="soundBtn" aria-label="Couper le son" title="Son"></button>
+  </header>
+
+  <!-- Accueil -->
+  <main id="home" class="app" style="padding:0">
+    <div class="hero">
+      <h1>Les <em>197</em> drapeaux de la planète, un par un.</h1>
+      <p>Choisis un mode et un niveau. Les drapeaux que tu rates reviennent plus souvent, jusqu'à ce que tu les connaisses.</p>
+    </div>
+    <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+
+    <div class="progress-card">
+      <div class="pc-head">
+        <span class="label">Drapeaux maîtrisés</span>
+        <strong id="masteredCount">0 <small>/ 197</small></strong>
+      </div>
+      <div class="bar"><i id="masteredBar"></i></div>
+      <div class="continents" id="contProgress"></div>
+    </div>
+
+    <section class="block">
+      <span class="label">Mode de jeu</span>
+      <div class="choices two" id="modes"></div>
+    </section>
+
+    <section class="block">
+      <span class="label">Niveau</span>
+      <div class="choices four" id="levels"></div>
+    </section>
+
+    <div class="row2">
+      <section class="block">
+        <span class="label">Continent</span>
+        <div class="chips" id="continentChips"></div>
+      </section>
+      <section class="block">
+        <span class="label">Questions</span>
+        <div class="chips" id="lengthChips"></div>
+      </section>
+    </div>
+
+    <div class="cta">
+      <button class="btn btn-primary" id="startBtn">Commencer la partie</button>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="reviewBtn">Réviser mes erreurs <span class="count-badge" id="errCount">0</span></button>
+        <button class="btn btn-ghost" id="exploreBtn">Parcourir l'atlas</button>
+      </div>
+    </div>
+    <p class="foot">Les données restent sur cet appareil. Drapeaux : <a href="https://github.com/lipis/flag-icons" target="_blank" rel="noopener">flag-icons</a> (MIT).</p>
+  </main>
+
+  <!-- Partie -->
+  <main id="game" class="app" style="padding:0" hidden>
+    <div class="hud">
+      <button class="icon-btn" id="quitBtn" aria-label="Quitter la partie" title="Quitter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="hud-mid">
+        <div class="hud-line"><span id="qIndex">1 / 10</span><span id="levelName"></span></div>
+        <div class="bar"><i id="roundBar"></i></div>
+      </div>
+      <div class="score-box"><b id="score">0</b><span class="streak" id="streak"></span></div>
+    </div>
+    <div class="timer" aria-hidden="true"><i id="timerBar"></i></div>
+
+    <div class="stage">
+      <p class="prompt" id="prompt"></p>
+      <div id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="typing" id="typing" hidden>
+        <div class="hint-line" id="hintLine"></div>
+        <form class="typing-row" id="typeForm" autocomplete="off">
+          <input id="typeInput" type="text" placeholder="Nom du pays…" aria-label="Nom du pays" autocapitalize="words" spellcheck="false">
+          <button class="btn btn-primary" type="submit" style="padding:12px 18px;font-size:1rem">OK</button>
+        </form>
+        <div class="typing-tools">
+          <button class="btn btn-ghost btn-small" id="hintBtn" type="button">Indice (−50 %)</button>
+          <button class="btn btn-ghost btn-small" id="skipBtn" type="button">Je ne sais pas</button>
+        </div>
+      </div>
+      <div class="feedback" id="feedback" hidden></div>
+    </div>
+  </main>
+
+  <!-- Fin -->
+  <main id="end" class="app" style="padding:0" hidden>
+    <div class="stage end">
+      <div class="stars" id="stars"></div>
+      <h2 id="endTitle"></h2>
+      <p class="record" id="record" hidden>Nouveau record !</p>
+      <div class="stats">
+        <div class="stat"><b id="endScore">0</b><span>points</span></div>
+        <div class="stat"><b id="endAcc">0 %</b><span>bonnes réponses</span></div>
+        <div class="stat"><b id="endStreak">0</b><span>meilleure série</span></div>
+      </div>
+      <div id="mistakesWrap" class="block" style="display:flex;flex-direction:column;gap:10px">
+        <span class="label">À revoir</span>
+        <div class="mistakes" id="mistakes"></div>
+      </div>
+      <div class="cta">
+        <button class="btn btn-primary" id="againBtn">Rejouer</button>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="endReviewBtn">Revoir ces drapeaux</button>
+          <button class="btn btn-ghost" id="endHomeBtn">Accueil</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Atlas -->
+  <main id="explore" class="app" style="padding:0" hidden>
+    <div class="explore-head">
+      <h2>Atlas des drapeaux</h2>
+      <input class="search" id="search" type="search" placeholder="Chercher un pays ou une capitale…" aria-label="Chercher">
+      <div class="chips" id="exploreChips"></div>
+      <div class="legend">
+        <span><i class="dot"></i>Pas encore vu</span>
+        <span><i class="dot l1"></i>En cours</span>
+        <span><i class="dot l2"></i>Maîtrisé</span>
+      </div>
+    </div>
+    <div class="grid" id="atlas"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const byCode = Object.fromEntries(COUNTRIES.map(c => [c.code, c]));
+  const flagSrc = code => `flags/${code}.svg`;
+  const CONTINENTS = ["Afrique", "Amérique", "Asie", "Europe", "Océanie"];
+
+  const MODES = [
+    { id: "name", t: "Quel est ce pays ?", d: "Un drapeau s'affiche, trouve le pays." },
+    { id: "flag", t: "Trouve le drapeau", d: "Un pays s'affiche, choisis son drapeau." },
+  ];
+  const LEVELS = [
+    { id: 1, t: "Découverte", d: "Les {n} drapeaux les plus connus, 4 choix.", tiers: [1], opts: 4, time: 15, mult: 1 },
+    { id: 2, t: "Voyageur", d: "{n} pays, pièges du même continent.", tiers: [1, 2], opts: 4, time: 12, mult: 1.5 },
+    { id: 3, t: "Explorateur", d: "Les 197 pays, 6 choix et drapeaux sosies.", tiers: [1, 2, 3], opts: 6, time: 10, mult: 2 },
+    { id: 4, t: "Vexillologue", d: "Les 197 pays, tu écris le nom toi-même.", tiers: [1, 2, 3], opts: 6, time: 15, mult: 3, typing: true },
+  ];
+  const LENGTHS = [10, 20, 50];
+
+  // ---------- Sauvegarde locale ----------
+  const KEY = "drapeaux-du-monde-v1";
+  let save = { stats: {}, best: {}, errors: [], muted: false, mode: "name", level: 1, continent: "Tous", length: 10 };
+  try { Object.assign(save, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) {} };
+  const lvlOf = code => (save.stats[code] && save.stats[code].lvl) || 0;
+  const isMastered = code => lvlOf(code) >= 2;
+
+  // ---------- Sons ----------
+  let ctx;
+  function tone(freqs, dur = .12, type = "sine", vol = .12) {
+    if (save.muted) return;
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      freqs.forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * dur;
+        o.type = type; o.frequency.value = f;
+        g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur * 1.6);
+        o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur * 1.7);
+      });
+    } catch (e) {}
+  }
+  const sfx = {
+    good: () => tone([660, 880]),
+    bad: () => tone([220, 165], .16, "triangle", .14),
+    streak: () => tone([660, 830, 990, 1320], .08),
+    end: () => tone([523, 659, 784, 1047], .13),
+  };
+  const ICON_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>';
+  const ICON_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>';
+  function renderSound() {
+    $("soundBtn").innerHTML = save.muted ? ICON_OFF : ICON_ON;
+    $("soundBtn").setAttribute("aria-label", save.muted ? "Activer le son" : "Couper le son");
+  }
+
+  // ---------- Outils ----------
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ").trim().replace(/^(l|le|la|les) /, "");
+  function lev(a, b) {
+    const m = a.length, n = b.length, d = Array.from({ length: m + 1 }, (_, i) => [i]);
+    for (let j = 1; j <= n; j++) d[0][j] = j;
+    for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return d[m][n];
+  }
+  function matches(input, code) {
+    const x = norm(input); if (!x) return false;
+    const answers = [byCode[code].name, ...(ALIASES[code] || [])].map(norm);
+    return answers.some(a => {
+      if (a === x) return true;
+      const tol = a.length >= 9 ? 2 : a.length >= 5 ? 1 : 0;
+      return lev(a, x) <= tol;
+    });
+  }
+  // Évite d'accepter une faute de frappe qui donne exactement un autre pays (Niger / Nigeria…)
+  function exactOther(input, code) {
+    const x = norm(input);
+    return COUNTRIES.some(c => c.code !== code && [c.name, ...(ALIASES[c.code] || [])].map(norm).includes(x));
+  }
+  const lookalikesOf = code => [...new Set(LOOKALIKES.filter(g => g.includes(code)).flat())].filter(c => c !== code);
+
+  // ---------- Accueil ----------
+  function pool(level, continent) {
+    return COUNTRIES.filter(c => level.tiers.includes(c.tier) && (continent === "Tous" || c.continent === continent));
+  }
+  function bestKey() { return `${save.mode}-${save.level}`; }
+
+  function renderHome() {
+    const mastered = COUNTRIES.filter(c => isMastered(c.code)).length;
+    $("masteredCount").innerHTML = `${mastered} <small>/ ${COUNTRIES.length}</small>`;
+    requestAnimationFrame(() => $("masteredBar").style.width = (mastered / COUNTRIES.length * 100) + "%");
+    $("contProgress").innerHTML = CONTINENTS.map(ct => {
+      const all = COUNTRIES.filter(c => c.continent === ct), m = all.filter(c => isMastered(c.code)).length;
+      return `<div class="cont"><span>${ct}</span><b>${m}/${all.length}</b><div class="bar"><i style="width:${m / all.length * 100}%"></i></div></div>`;
+    }).join("");
+
+    $("modes").innerHTML = MODES.map(m =>
+      `<button class="tile" data-mode="${m.id}" aria-pressed="${save.mode === m.id}"><span class="t">${m.t}</span><span class="d">${m.d}</span></button>`).join("");
+    $("levels").innerHTML = LEVELS.map(l => {
+      const b = save.best[`${save.mode}-${l.id}`];
+      const d = (save.mode === "flag" && l.typing ? "Les 197 pays, 6 drapeaux sosies, moins de temps." : l.d)
+        .replace("{n}", COUNTRIES.filter(c => l.tiers.includes(c.tier)).length);
+      return `<button class="tile" data-level="${l.id}" aria-pressed="${save.level === l.id}">
+        <span class="t">${l.t}</span><span class="d">${d}</span>
+        <span class="meta"><span class="pips">${[1, 2, 3, 4].map(i => `<i class="${i <= l.id ? "on" : ""}"></i>`).join("")}</span>
+        <span class="best">${b ? "record " + b : ""}</span></span></button>`;
+    }).join("");
+    $("continentChips").innerHTML = ["Tous", ...CONTINENTS].map(c =>
+      `<button class="chip" data-cont="${c}" aria-pressed="${save.continent === c}">${c}</button>`).join("");
+    $("lengthChips").innerHTML = LENGTHS.map(n =>
+      `<button class="chip" data-len="${n}" aria-pressed="${save.length === n}">${n}</button>`).join("");
+
+    const n = save.errors.length;
+    $("errCount").textContent = n;
+    $("errCount").hidden = !n;
+    $("reviewBtn").disabled = !n;
+  }
+  function buildMarquee() {
+    const pick = shuffle(COUNTRIES).slice(0, 40);
+    const html = pick.map(c => `<img src="${flagSrc(c.code)}" alt="" loading="lazy">`).join("");
+    $("marquee").innerHTML = html + html;
+  }
+
+  $("modes").addEventListener("click", e => { const t = e.target.closest("[data-mode]"); if (!t) return; save.mode = t.dataset.mode; persist(); renderHome(); });
+  $("levels").addEventListener("click", e => { const t = e.target.closest("[data-level]"); if (!t) return; save.level = +t.dataset.level; persist(); renderHome(); });
+  $("continentChips").addEventListener("click", e => { const t = e.target.closest("[data-cont]"); if (!t) return; save.continent = t.dataset.cont; persist(); renderHome(); });
+  $("lengthChips").addEventListener("click", e => { const t = e.target.closest("[data-len]"); if (!t) return; save.length = +t.dataset.len; persist(); renderHome(); });
+
+  // ---------- Écrans ----------
+  function show(id) {
+    ["home", "game", "end", "explore"].forEach(s => $(s).hidden = s !== id);
+    window.scrollTo(0, 0);
+    if (id === "home") renderHome();
+  }
+
+  // ---------- Partie ----------
+  let G = null, timerRAF = 0;
+
+  function weightedPick(list, n) {
+    const items = list.map(c => ({ c, w: isMastered(c.code) ? 1 : lvlOf(c.code) === 1 ? 2 : 3 }));
+    const out = [];
+    while (out.length < n && items.length) {
+      let r = Math.random() * items.reduce((s, x) => s + x.w, 0), i = 0;
+      while ((r -= items[i].w) > 0) i++;
+      out.push(items.splice(i, 1)[0].c);
+    }
+    return out;
+  }
+
+  function startGame(review = null) {
+    const level = LEVELS[save.level - 1];
+    let questions;
+    if (review) questions = shuffle(review.map(c => byCode[c])).slice(0, 30);
+    else {
+      const p = pool(level, save.continent);
+      questions = weightedPick(p, Math.min(save.length, p.length));
+    }
+    if (!questions.length) return;
+    G = { level, review: !!review, questions, i: 0, score: 0, streak: 0, bestStreak: 0, correct: 0, missed: [], answered: false, hints: 0 };
+    $("levelName").textContent = review ? "Révision" : `${level.t}${save.continent !== "Tous" ? " · " + save.continent : ""}`;
+    show("game");
+    nextQuestion();
+  }
+
+  function distractors(answer, n) {
+    const level = G.level;
+    const base = G.review ? COUNTRIES : pool(level, "Tous");
+    const sameCont = shuffle(base.filter(c => c.continent === answer.continent && c.code !== answer.code));
+    const rest = shuffle(base.filter(c => c.code !== answer.code));
+    let order;
+    if (level.id >= 3) order = [...shuffle(lookalikesOf(answer.code).map(c => byCode[c])), ...sameCont, ...rest];
+    else if (level.id === 2 || G.review) order = [...sameCont, ...rest];
+    else order = rest;
+    const seen = new Set([answer.code]), out = [];
+    for (const c of order) { if (!seen.has(c.code)) { seen.add(c.code); out.push(c); } if (out.length === n) break; }
+    return out;
+  }
+
+  function nextQuestion() {
+    const q = G.questions[G.i];
+    G.answered = false; G.hintStep = 0; G.qStart = performance.now();
+    $("feedback").hidden = true;
+    $("qIndex").textContent = `${G.i + 1} / ${G.questions.length}`;
+    $("roundBar").style.width = (G.i / G.questions.length * 100) + "%";
+    renderHud();
+
+    const typing = G.level.typing && save.mode === "name" && !G.review;
+    const nOpts = G.review ? 4 : G.level.opts;
+    $("typing").hidden = !typing;
+    $("options").hidden = typing;
+
+    if (save.mode === "name") {
+      $("prompt").textContent = "Quel pays a ce drapeau ?";
+      $("question").innerHTML = `<div class="flag-frame pop"><img src="${flagSrc(q.code)}" alt="Drapeau à identifier"></div>`;
+    } else {
+      $("prompt").textContent = "Trouve le drapeau de";
+      $("question").innerHTML = `<div class="country-q pop">${q.name}</div>`;
+    }
+
+    if (typing) {
+      const inp = $("typeInput");
+      inp.value = ""; inp.className = ""; inp.disabled = false;
+      $("hintLine").textContent = "";
+      $("hintBtn").disabled = false; $("skipBtn").disabled = false;
+      setTimeout(() => inp.focus({ preventScroll: true }), 50);
+    } else {
+      const opts = shuffle([q, ...distractors(q, nOpts - 1)]);
+      const el = $("options");
+      el.className = "options" + (nOpts === 6 ? " six" : "") + (save.mode === "flag" ? " flags" : "");
+      el.innerHTML = opts.map((c, i) => save.mode === "name"
+        ? `<button class="opt" data-code="${c.code}"><span class="k">${i + 1}</span>${c.name}</button>`
+        : `<button class="opt flag-opt" data-code="${c.code}" aria-label="Option ${i + 1}"><span class="k">${i + 1}</span><img src="${flagSrc(c.code)}" alt=""></button>`
+      ).join("");
+    }
+    runTimer();
+  }
+
+  function runTimer() {
+    cancelAnimationFrame(timerRAF);
+    const total = G.level.time * 1000 * (save.mode === "flag" && G.level.typing ? .6 : 1);
+    G.timeTotal = total;
+    const bar = $("timerBar");
+    const tick = () => {
+      if (!G || G.answered) return;
+      const f = Math.max(0, 1 - (performance.now() - G.qStart) / total);
+      bar.style.transform = `scaleX(${f})`;
+      if (f > 0) timerRAF = requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  function renderHud() {
+    $("score").textContent = G.score;
+    $("streak").textContent = G.streak >= 2 ? `série ×${G.streak}` : "";
+  }
+
+  function answer(ok, chosen) {
+    if (G.answered) return;
+    G.answered = true;
+    cancelAnimationFrame(timerRAF);
+    const q = G.questions[G.i];
+    const st = save.stats[q.code] || (save.stats[q.code] = { lvl: 0, ok: 0, ko: 0 });
+    let gained = 0;
+    if (ok) {
+      G.correct++; G.streak++; G.bestStreak = Math.max(G.bestStreak, G.streak);
+      const speed = Math.max(0, 1 - (performance.now() - G.qStart) / G.timeTotal);
+      gained = Math.round((100 + 50 * speed) * G.level.mult * Math.min(2, 1 + (G.streak - 1) * .1) * (G.hintStep ? .5 : 1));
+      G.score += gained;
+      st.ok++; st.lvl = Math.min(3, st.lvl + 1);
+      if (st.lvl >= 2) save.errors = save.errors.filter(c => c !== q.code);
+      G.streak > 0 && G.streak % 5 === 0 ? sfx.streak() : sfx.good();
+    } else {
+      G.streak = 0; G.missed.push(q.code);
+      st.ko++; st.lvl = 0;
+      if (!save.errors.includes(q.code)) save.errors.push(q.code);
+      sfx.bad();
+    }
+    persist();
+    renderHud();
+
+    // Marquage des options
+    document.querySelectorAll("#options .opt").forEach(b => {
+      b.disabled = true;
+      if (b.dataset.code === q.code) b.classList.add("correct");
+      else if (b.dataset.code === chosen) b.classList.add("wrong");
+      else b.classList.add("dim");
+    });
+
+    const fb = $("feedback");
+    const chosenC = chosen && chosen !== q.code ? byCode[chosen] : null;
+    fb.className = "feedback " + (ok ? "ok" : "ko");
+    fb.innerHTML = `<img src="${flagSrc(q.code)}" alt="">
+      <div class="fb-text">
+        <div class="fb-title">${ok ? `Bravo ! +${gained}` : chosenC ? `Non, c'était ${chosenC.name}` : "Raté"}</div>
+        <div class="fb-sub"><b>${q.name}</b> <span class="iso">${q.code.toUpperCase()}</span> · capitale ${q.capital}</div>
+      </div>
+      <button class="btn btn-primary next-btn" id="nextBtn" style="padding:10px 16px;font-size:1rem">${G.i + 1 < G.questions.length ? "Suivant" : "Résultats"}</button>`;
+    fb.hidden = false;
+    $("nextBtn").onclick = advance;
+    if (ok) G.autoNext = setTimeout(advance, 1300);
+    else $("nextBtn").focus({ preventScroll: true });
+  }
+
+  function advance() {
+    clearTimeout(G.autoNext);
+    if (!G.answered) return;
+    G.i++;
+    if (G.i >= G.questions.length) endGame();
+    else nextQuestion();
+  }
+
+  $("options").addEventListener("click", e => {
+    const b = e.target.closest(".opt"); if (!b || G.answered) return;
+    answer(b.dataset.code === G.questions[G.i].code, b.dataset.code);
+  });
+
+  $("typeForm").addEventListener("submit", e => {
+    e.preventDefault();
+    if (!G || G.answered) { advance(); return; }
+    const inp = $("typeInput"), q = G.questions[G.i];
+    if (!inp.value.trim()) return;
+    const ok = matches(inp.value, q.code) && !exactOther(inp.value, q.code);
+    inp.classList.add(ok ? "ok" : "ko");
+    if (ok) inp.value = q.name;
+    inp.disabled = true; $("hintBtn").disabled = true; $("skipBtn").disabled = true;
+    const other = !ok && COUNTRIES.find(c => matches(inp.value, c.code));
+    answer(ok, other ? other.code : null);
+  });
+  $("hintBtn").addEventListener("click", () => {
+    const q = G.questions[G.i];
+    G.hintStep++;
+    const n = q.name;
+    const reveal = G.hintStep === 1 ? 1 : Math.ceil(n.length / 3);
+    const pattern = [...n].map((ch, i) => /[\s\-']/.test(ch) ? ch : i < reveal ? ch : "_").join("");
+    $("hintLine").textContent = `${q.continent} · ${pattern}`;
+    if (G.hintStep >= 2) $("hintBtn").disabled = true;
+    $("typeInput").focus({ preventScroll: true });
+  });
+  $("skipBtn").addEventListener("click", () => { $("typeInput").disabled = true; $("hintBtn").disabled = true; $("skipBtn").disabled = true; answer(false, null); });
+
+  document.addEventListener("keydown", e => {
+    if ($("game").hidden || !G) return;
+    if (e.key === "Escape") { quit(); return; }
+    if (G.answered && (e.key === "Enter" || e.key === " ") && document.activeElement?.id !== "nextBtn") { e.preventDefault(); advance(); return; }
+    if (!G.answered && /^[1-6]$/.test(e.key) && $("typing").hidden) {
+      const b = document.querySelectorAll("#options .opt")[+e.key - 1]; if (b) b.click();
+    }
+  });
+
+  function quit() { cancelAnimationFrame(timerRAF); if (G) clearTimeout(G.autoNext); G = null; show("home"); }
+  $("quitBtn").addEventListener("click", quit);
+
+  // ---------- Fin ----------
+  let lastMissed = [];
+  function endGame() {
+    const total = G.questions.length, acc = Math.round(G.correct / total * 100);
+    const stars = acc >= 90 ? 3 : acc >= 70 ? 2 : acc >= 40 ? 1 : 0;
+    const STAR = '<path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/>';
+    $("stars").innerHTML = [0, 1, 2].map(i => `<svg viewBox="0 0 24 24" class="${i < stars ? "on" : ""}" style="animation-delay:${i * .15}s">${STAR}</svg>`).join("");
+    $("endTitle").textContent = ["Continue, ça va venir", "Pas mal du tout", "Très bien joué", "Parfait, quel œil !"][acc === 100 ? 3 : stars === 3 ? 2 : stars];
+    $("endScore").textContent = G.score;
+    $("endAcc").textContent = acc + " %";
+    $("endStreak").textContent = G.bestStreak;
+    let rec = false;
+    if (!G.review) {
+      const k = bestKey();
+      if (G.score > (save.best[k] || 0)) { rec = !!save.best[k] || G.score > 0; save.best[k] = G.score; persist(); }
+    }
+    $("record").hidden = !rec;
+    lastMissed = [...new Set(G.missed)];
+    $("mistakesWrap").hidden = !lastMissed.length;
+    $("endReviewBtn").hidden = !lastMissed.length;
+    $("mistakes").innerHTML = lastMissed.map(c => `<div class="mistake"><img src="${flagSrc(c)}" alt=""><span>${byCode[c].name}</span></div>`).join("");
+    $("roundBar").style.width = "100%";
+    const wasReview = G.review;
+    G = null;
+    show("end");
+    $("againBtn").dataset.review = wasReview ? "1" : "";
+    sfx.end();
+    if (stars === 3) confetti();
+  }
+  $("againBtn").addEventListener("click", () => $("againBtn").dataset.review && save.errors.length ? startGame(save.errors) : startGame());
+  $("endReviewBtn").addEventListener("click", () => startGame(lastMissed));
+  $("endHomeBtn").addEventListener("click", () => show("home"));
+
+  function confetti() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cv = $("confetti"), c = cv.getContext("2d");
+    cv.hidden = false; cv.width = innerWidth; cv.height = innerHeight;
+    const cols = ["#1F4FD8", "#F2B705", "#CF3328", "#128548", "#FFFFFF"];
+    const ps = Array.from({ length: 140 }, () => ({ x: innerWidth / 2, y: innerHeight * .35, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, s: 6 + Math.random() * 6, r: Math.random() * 6, col: cols[Math.random() * 5 | 0] }));
+    let f = 0;
+    (function draw() {
+      c.clearRect(0, 0, cv.width, cv.height);
+      ps.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += .1; c.save(); c.translate(p.x, p.y); c.rotate(p.r); c.fillStyle = p.col; c.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * .66); c.restore(); });
+      if (++f < 150) requestAnimationFrame(draw); else cv.hidden = true;
+    })();
+  }
+
+  // ---------- Atlas ----------
+  let exploreCont = "Tous";
+  function renderAtlas() {
+    const q = norm($("search").value);
+    $("exploreChips").innerHTML = ["Tous", ...CONTINENTS].map(c => `<button class="chip" data-cont="${c}" aria-pressed="${exploreCont === c}">${c}</button>`).join("");
+    const list = COUNTRIES.filter(c => (exploreCont === "Tous" || c.continent === exploreCont) &&
+      (!q || norm(c.name).includes(q) || norm(c.capital).includes(q) || (ALIASES[c.code] || []).some(a => a.includes(q))))
+      .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+    $("atlas").innerHTML = list.length ? list.map(c => `<div class="card"><img src="${flagSrc(c.code)}" alt="Drapeau : ${c.name}" loading="lazy">
+      <div class="n">${c.name}</div><div class="c"><span>${c.capital}</span><i class="dot l${lvlOf(c.code)}" title="${isMastered(c.code) ? "Maîtrisé" : lvlOf(c.code) ? "En cours" : "Pas encore vu"}"></i></div></div>`).join("")
+      : `<p class="empty">Aucun pays ne correspond à « ${$("search").value} ».</p>`;
+  }
+  $("search").addEventListener("input", renderAtlas);
+  $("exploreChips").addEventListener("click", e => { const t = e.target.closest("[data-cont]"); if (!t) return; exploreCont = t.dataset.cont; renderAtlas(); });
+  $("exploreBtn").addEventListener("click", () => { show("explore"); renderAtlas(); });
+
+  // ---------- Démarrage ----------
+  $("startBtn").addEventListener("click", () => startGame());
+  $("reviewBtn").addEventListener("click", () => save.errors.length && startGame(save.errors));
+  $("homeBtn").addEventListener("click", () => { if (G) quit(); else show("home"); });
+  $("soundBtn").addEventListener("click", () => { save.muted = !save.muted; persist(); renderSound(); if (!save.muted) sfx.good(); });
+  renderSound();
+  buildMarquee();
+  renderHome();
+})();
+</script>
+</body>
+</html>
