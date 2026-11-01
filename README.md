@@ -1,29 +1,30 @@
-# Drapeaux du Monde
+# Drapeaux en tête
 
-Un jeu pour apprendre les 197 drapeaux de la planète (193 pays de l'ONU, plus le Vatican, la Palestine, le Kosovo et Taïwan).
+Flashcards pour apprendre les drapeaux du monde : 194 pays, Kosovo, Palestine, Taïwan et 34 territoires. C'est une web app installable sur téléphone et PC, qui marche hors ligne, en français. Elle a aussi un **Défi chrono** à 4 niveaux de difficulté (score, séries, records). Elle s'appuie sur la répétition espacée FSRS-6, le rappel actif, des pièges choisis parmi les drapeaux qui se ressemblent et une correction avec astuces.
 
-**Jouer :** activez GitHub Pages (Settings → Pages → branche `main`, dossier `/`), puis ouvrez `https://<votre-compte>.github.io/drapeaux-du-monde/`.
+## Utiliser l'app
+- Mise en ligne : voir [docs/DEPLOY.md](docs/DEPLOY.md). Avec GitHub Pages, l'adresse est du type `https://<pseudo>.github.io/<dépôt>/` (ici https://ghitard.github.io/drapeaux-du-monde/).
+- Installation sur le téléphone, transfert de progression entre appareils et récupération depuis la version Claude : voir [docs/DEPLOY.md](docs/DEPLOY.md).
 
-## Modes
-- **Quel est ce pays ?** : un drapeau s'affiche, trouvez le pays.
-- **Trouve le drapeau** : un pays s'affiche, choisissez son drapeau.
+## Développer
+Il suffit de Node.js 18 ou plus récent. Aucune dépendance n'est nécessaire pour construire ou tester.
 
-## Niveaux
-| Niveau | Pays | Réponse |
-|---|---|---|
-| Découverte | 43 drapeaux célèbres | 4 choix au hasard |
-| Voyageur | 116 pays | 4 choix du même continent |
-| Explorateur | 197 pays | 6 choix, drapeaux sosies (Tchad/Roumanie, Monaco/Indonésie…) |
-| Vexillologue | 197 pays | saisie libre (accents et petites fautes tolérés), indices |
+| Commande | Rôle |
+|---|---|
+| `npm test` | Tests des données et de l'algorithme FSRS |
+| `npm run build` | Construit le site dans `dist/` |
+| `npm run serve` | Construit puis sert l'app sur http://localhost:8080 |
+| `npm run test:e2e` | Test complet dans un navigateur (après `npm i -D playwright && npx playwright install chromium`) |
 
-## Fonctionnalités
-- Filtre par continent, parties de 10, 20 ou 50 questions
-- Score avec bonus de rapidité et de série
-- Les drapeaux ratés reviennent plus souvent ; mode « Réviser mes erreurs »
-- Progression par continent, records par niveau, atlas consultable
-- Raccourcis clavier : `1`–`6` pour répondre, `Entrée` pour continuer, `Échap` pour quitter
-- Fonctionne sur téléphone et ordinateur, en thème clair ou sombre
+```
+src/            données (data.js), algorithme (engine.js), application (app.js, app.css)
+assets/         drapeaux SVG, ratios, sosies visuels, polices, icônes
+scripts/        build, serveur local, outils optionnels (tools/)
+tests/          tests unitaires, test de bout en bout, valeurs de référence FSRS
+docs/           déploiement, décisions et méthode, prompts pour Claude Code
+.github/        déploiement automatique sur GitHub Pages
+```
 
-Aucune installation : HTML, CSS et JavaScript. Pour tester en local : `python3 -m http.server` puis http://localhost:8000.
+Pour travailler avec Claude Code, les règles du projet sont dans [CLAUDE.md](CLAUDE.md) et les prompts dans [docs/PROMPT-CLAUDE-CODE.md](docs/PROMPT-CLAUDE-CODE.md).
 
-Drapeaux SVG : [flag-icons](https://github.com/lipis/flag-icons) (licence MIT, voir `flags/LICENSE`).
+Les crédits (drapeaux, polices, algorithme) sont dans [CREDITS.md](CREDITS.md).
