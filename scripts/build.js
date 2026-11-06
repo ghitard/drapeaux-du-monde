@@ -74,7 +74,7 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Drapeaux en tête</title>
-<meta name="description" content="Apprends les drapeaux du monde avec la répétition espacée : 231 pays et territoires, rappel actif et duels de sosies.">
+<meta name="description" content="Apprends les drapeaux du monde avec la répétition espacée : 230 pays et territoires, rappel actif et duels de sosies.">
 <meta name="theme-color" content="#edf1f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a101a" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
@@ -132,7 +132,7 @@ fs.writeFileSync(path.join(OUT, 'manifest.webmanifest'), JSON.stringify({
   ],
 }, null, 2));
 
-// ── service worker : page « réseau d'abord » (mises à jour), le reste « cache d'abord » ; 231 drapeaux précachés ──
+// ── service worker : page « réseau d'abord » (mises à jour), le reste « cache d'abord » ; 230 drapeaux précachés ──
 const core = ['./', './index.html', './manifest.webmanifest',
   ...fs.readdirSync(path.join(OUT, 'icons')).map(f => './icons/' + f),
   ...fs.readdirSync(path.join(OUT, 'fonts')).filter(f => f.endsWith('.woff2')).map(f => './fonts/' + f)];

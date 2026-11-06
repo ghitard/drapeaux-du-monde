@@ -2,7 +2,7 @@
 
 ## Le projet en bref
 Web app de flashcards pour apprendre les drapeaux du monde, faite pour Ghita. C'est une PWA installable sur téléphone et PC, qui marche hors ligne. Interface en français, avec tutoiement.
-- 231 drapeaux : 194 pays (ONU + Vatican), 3 États à reconnaissance limitée (Kosovo, Palestine, Taïwan, `t:'lim'`), 34 territoires (`t:'terr'`, affichés « Territoire, pas un pays »).
+- 230 drapeaux : 193 pays (ONU + Vatican, sans Israël, retiré à la demande de Ghita), 3 États à reconnaissance limitée (Kosovo, Palestine, Taïwan, `t:'lim'`), 34 territoires (`t:'terr'`, affichés « Territoire, pas un pays »).
 - Méthode d'apprentissage : répétition espacée FSRS-6, rappel actif (QCM puis saisie), pièges choisis parmi les sosies visuels, correction immédiate avec astuces, note objective. Le détail et les sources sont dans `docs/DECISIONS.md`.
 - Tout est statique : pas de serveur, pas de dépendance à l'exécution. La progression est dans le `localStorage` de chaque appareil. On passe d'un appareil à l'autre par export/import, avec une fusion carte par carte.
 
@@ -31,7 +31,7 @@ Web app de flashcards pour apprendre les drapeaux du monde, faite pour Ghita. C'
   Le fichier contient aussi `GROUPS` (groupes de sosies avec leur astuce) et `NAME_PAIRS` (noms faciles à confondre).
 - `src/engine.js` contient FSRS-6, identique à py-fsrs 6.3.2, et `scheduleCard()`, qui gère les étapes d'apprentissage pendant la séance et la remise en file.
 - `src/app.js` contient toute l'application en JS vanilla, avec un rendu par gabarits de chaînes : état, séances, collection, stats, réglages, transfert, installation, enregistrement du service worker. La constante `WEB` vaut `BUILD.target === 'web'`. `Store.connect()` (`window.claude`) est l'ancien mode « artefact Claude » : il est inactif dans la version web, ne pas s'en servir.
-- **Défi chrono** (section « défi » de `src/app.js`) : jeu à 4 niveaux (Découverte f≤1, Voyageur f≤2, Explorateur tous les pays, Vexillologue avec territoires et saisie), score, séries et records. Il ne lit ni n'écrit `state` : ses réglages et records sont sous la clé `drapeaux-en-tete:defi` `{dir, lvl, zone, len, best: {"f-3": score}}`.
+- **Défi chrono** (section « défi » de `src/app.js`) : jeu à 4 niveaux (Découverte f≤1, Voyageur f≤2, Explorateur tous les pays, Vexillologue avec territoires et saisie), score, séries et records. Après une erreur, ta réponse et la bonne réponse s'affichent côte à côte, chacune avec son propre drapeau. Il ne lit ni n'écrit `state` : ses réglages et records sont sous la clé `drapeaux-en-tete:defi` `{dir, lvl, zone, len, best: {"f-3": score}}`.
 - `src/app.css` : les tokens de couleur clair/sombre sont en tête de fichier. Toute couleur passe par un token.
 - `assets/flags/*.svg` : drapeaux optimisés, aux proportions officielles. `assets/flags-meta.json` donne le ratio largeur/hauteur. `assets/neighbors.json` donne 10 sosies visuels par drapeau, calculés en CIELAB.
 - `assets/fonts` (Lexend, auto-hébergée) et `assets/icons` (icônes de l'app).
@@ -45,7 +45,7 @@ Web app de flashcards pour apprendre les drapeaux du monde, faite pour Ghita. C'
    - `days[dayIndex] = {n, k, nw, t, g}` ;
    - `conf["A~B"] = nombre`.
 
-   Si tu changes ce format, écris une migration rétrocompatible et un test. Les fichiers d'export `{app:'drapeaux-en-tete', v:1, exportedAt, state}`, ainsi que l'ancien état brut copié depuis l'artefact Claude, doivent rester importables.
+   Si tu changes ce format, écris une migration rétrocompatible et un test. Les cartes d'un code absent de `FLAGS` (ex. `IL_f`, `IL_r`) et les confusions qui le citent sont supprimées par `sanitize()` au chargement et à l'import. Les fichiers d'export `{app:'drapeaux-en-tete', v:1, exportedAt, state}`, ainsi que l'ancien état brut copié depuis l'artefact Claude, doivent rester importables.
 2. **FSRS.** `src/engine.js` doit continuer à donner exactement les résultats de py-fsrs. `npm test` compare 2 563 révisions. Ne change pas les paramètres sans raison explicite.
 3. **Identifiants des cartes.** Ils s'écrivent `<code>_f` (drapeau → nom) et `<code>_r` (nom → drapeau). Ne renomme jamais un code existant de `FLAGS`, sinon la progression est perdue. Pour corriger un nom, modifie `n` ou `a`.
 4. **Chemins relatifs partout.** Le site est servi sous `/<dépôt>/` sur GitHub Pages.

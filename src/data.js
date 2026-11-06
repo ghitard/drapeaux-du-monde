@@ -114,7 +114,6 @@ const FLAGS = [
   // ───────── Moyen-Orient ─────────
   {c:"AE",n:"Émirats arabes unis",a:["EAU","Émirats","Emirats arabes"],cap:"Abou Dabi",ct:"mo",f:2,i:"Bande rouge verticale au mât, vert-blanc-noir : les couleurs panarabes."},
   {c:"BH",n:"Bahreïn",cap:"Manama",ct:"mo",f:3,i:"Rouge vif et bande blanche dentelée de cinq pointes : les cinq piliers de l’islam."},
-  {c:"IL",n:"Israël",cap:"Jérusalem (statut contesté)",ct:"mo",f:1,i:"Étoile de David bleue entre deux bandes bleues, inspiré du châle de prière (tallit)."},
   {c:"IQ",n:"Irak",a:["Iraq"],cap:"Bagdad",ct:"mo",f:2,i:"Rouge-blanc-noir avec « Allahu akbar » écrit en coufique vert."},
   {c:"IR",n:"Iran",cap:"Téhéran",ct:"mo",f:2,i:"Vert-blanc-rouge, emblème rouge au centre et « Allahu akbar » répété 22 fois sur les bordures."},
   {c:"JO",n:"Jordanie",cap:"Amman",ct:"mo",f:2,i:"Panarabe avec une étoile blanche à sept branches dans le triangle : les sept versets de la Fatiha."},

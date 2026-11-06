@@ -21,9 +21,9 @@ function norm(s) {
   return s;
 }
 
-test('231 entrées : 194 pays, 3 à reconnaissance limitée, 34 territoires', () => {
-  assert.strictEqual(FLAGS.length, 231);
-  assert.strictEqual(FLAGS.filter(f => !f.t).length, 194);
+test('230 entrées : 193 pays, 3 à reconnaissance limitée, 34 territoires', () => {
+  assert.strictEqual(FLAGS.length, 230);
+  assert.strictEqual(FLAGS.filter(f => !f.t).length, 193);
   assert.strictEqual(FLAGS.filter(f => f.t === 'lim').length, 3);
   assert.strictEqual(FLAGS.filter(f => f.t === 'terr').length, 34);
 });

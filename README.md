@@ -1,6 +1,6 @@
 # Drapeaux en tête
 
-Flashcards pour apprendre les drapeaux du monde : 194 pays, Kosovo, Palestine, Taïwan et 34 territoires. C'est une web app installable sur téléphone et PC, qui marche hors ligne, en français. Elle a aussi un **Défi chrono** à 4 niveaux de difficulté (score, séries, records). Elle s'appuie sur la répétition espacée FSRS-6, le rappel actif, des pièges choisis parmi les drapeaux qui se ressemblent et une correction avec astuces.
+Flashcards pour apprendre les drapeaux du monde : 193 pays, Kosovo, Palestine, Taïwan et 34 territoires. C'est une web app installable sur téléphone et PC, qui marche hors ligne, en français. Elle a aussi un **Défi chrono** à 4 niveaux de difficulté (score, séries, records). Elle s'appuie sur la répétition espacée FSRS-6, le rappel actif, des pièges choisis parmi les drapeaux qui se ressemblent et une correction avec astuces.
 
 ## Utiliser l'app
 - Mise en ligne : voir [docs/DEPLOY.md](docs/DEPLOY.md). Avec GitHub Pages, l'adresse est du type `https://<pseudo>.github.io/<dépôt>/` (ici https://ghitard.github.io/drapeaux-du-monde/).

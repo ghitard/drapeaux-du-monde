@@ -116,6 +116,9 @@ function sanitize(st) {
   st.settings = Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), st.settings || {});
   st.settings.zones = Object.assign(Object.fromEntries(ZONE_KEYS.map(z => [z, 1])), st.settings.zones || {});
   st.days = st.days || {}; st.conf = st.conf || {};
+  // cartes et confusions d'un drapeau retiré de la liste (ex. IL) : ignorées partout
+  for (const id of Object.keys(st.cards)) if (!BY[id.slice(0, id.lastIndexOf('_'))]) delete st.cards[id];
+  for (const k of Object.keys(st.conf)) { const [a, b] = k.split('~'); if (!BY[a] || !BY[b]) delete st.conf[k]; }
   return st;
 }
 function readLocal() { try { const raw = localStorage.getItem(LS_KEY); return raw ? sanitize(JSON.parse(raw)) : null; } catch (e) { return null; } }
@@ -729,14 +732,22 @@ function defiPlayHTML() {
   }
   let fb = '';
   if (p) {
+    // chaque drapeau affiché est légendé par son propre nom : ta réponse à gauche, la bonne à droite
     const other = p.chosen && p.chosen !== q.code ? BY[p.chosen] : null;
-    const head = p.ok ? `Bravo, +${p.gained}` : other ? `Non, ça, c’est ${other.n}` : p.typed ? 'Ce n’est pas ça' : 'À retenir';
+    const head = p.ok ? `Bravo, +${p.gained}` : other ? 'Pas tout à fait' : p.typed ? 'Ce n’est pas ça' : 'À retenir';
     const gi = other ? (GROUPS_OF[q.code] || []).find(g => GROUPS[g].m.includes(other.c)) : undefined;
+    const next = `<button class="btn primary" id="defi-continue" data-action="defi-continue">${D.i + 1 < total ? 'Suivant' : 'Résultats'}</button>`;
+    const typedNote = !p.ok && p.typed ? `<span>Tu as écrit « ${esc(p.typed)} »${other ? `, c’est-à-dire ${esc(other.n)}` : ''}.</span>` : '';
     fb = `<section class="dfb ${p.ok ? 'ok' : 'ko'}" aria-live="polite">
-      <div class="dfb-main">${flagImg(q.code, '', '')}
-        <div class="dfb-text"><strong>${esc(head)}</strong><span><b>${esc(f.n)}</b> · ${esc(f.cap)}</span></div>
-        <button class="btn primary" id="defi-continue" data-action="defi-continue">${D.i + 1 < total ? 'Suivant' : 'Résultats'}</button>
-      </div>
+      ${other ? `<div class="dfb-main"><div class="dfb-text"><strong>${esc(head)}</strong>${typedNote}</div>${next}</div>
+      <div class="compare">
+        <figure class="mine" data-fig="mine" data-code="${other.c}">${flagImg(other.c, '', 'Drapeau : ' + other.n)}<figcaption><small>Ta réponse</small>${esc(other.n)}</figcaption></figure>
+        <figure class="good" data-fig="good" data-code="${f.c}">${flagImg(f.c, '', 'Drapeau : ' + f.n)}<figcaption><small>Bonne réponse</small>${esc(f.n)} · ${esc(f.cap)}</figcaption></figure>
+      </div>`
+      : `<div class="dfb-main"><span data-fig="good" data-code="${f.c}">${flagImg(f.c, '', 'Drapeau : ' + f.n)}</span>
+        <div class="dfb-text"><strong>${esc(head)}</strong>${typedNote}<span>${p.ok ? '' : 'Bonne réponse : '}<b>${esc(f.n)}</b> · ${esc(f.cap)}</span></div>
+        ${next}
+      </div>`}
       ${gi !== undefined ? `<div class="tip">${I.bulb}<div>${esc(GROUPS[gi].tip)}</div></div>` : ''}
     </section>`;
   }

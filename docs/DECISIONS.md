@@ -25,20 +25,20 @@ Une simulation sur 90 jours avec 8 nouveaux drapeaux par jour donne ceci : tout 
 - **Pas de synchro automatique** dans la version web : elle demanderait un serveur. Le transfert se fait par fichier ou par texte, avec fusion.
 
 ## Choix sur les données (vérifiés en octobre 2026)
-- **Périmètre** : 194 pays (193 membres de l'ONU + Vatican), Kosovo, Palestine et Taïwan (« reconnaissance limitée »), et 34 territoires choisis pour leur notoriété : Groenland, Hong Kong, Porto Rico, nations du Royaume-Uni, territoires britanniques, néerlandais, américains et français à drapeau propre. Le Sahara occidental n'est pas inclus.
+- **Périmètre** : 193 pays (membres de l'ONU + Vatican, sans Israël, retiré le 6 novembre 2026 à la demande de Ghita), Kosovo, Palestine et Taïwan (« reconnaissance limitée »), et 34 territoires choisis pour leur notoriété : Groenland, Hong Kong, Porto Rico, nations du Royaume-Uni, territoires britanniques, néerlandais, américains et français à drapeau propre. Le Sahara occidental n'est pas inclus.
 - **Afghanistan** : tricolore de l'ancienne République, encore utilisé aux JO de Paris 2024. La fiche mentionne le drapeau blanc des talibans.
 - **Syrie** : drapeau vert-blanc-noir à trois étoiles rouges, officiel depuis 2025.
 - **Kirghizistan** : version de décembre 2023, aux rayons droits.
 - **Guinée équatoriale** : capitale Ciudad de la Paz depuis janvier 2026.
 - **Indonésie** : capitale Jakarta, car le transfert vers Nusantara n'est pas effectif.
-- **Capitales contestées ou multiples**, formulées de façon neutre : Israël « Jérusalem (statut contesté) », Palestine « Ramallah (siège), Jérusalem-Est revendiquée », Bolivie « Sucre (La Paz : siège du gouvernement) », Afrique du Sud (trois capitales).
+- **Capitales contestées ou multiples**, formulées de façon neutre : Palestine « Ramallah (siège), Jérusalem-Est revendiquée », Bolivie « Sucre (La Paz : siège du gouvernement) », Afrique du Sud (trois capitales).
 - **Proportions** : chaque drapeau garde ses proportions officielles (Suisse et Vatican carrés, Népal non rectangulaire, Qatar 11:28…).
 
 ## Historique
 - **25 octobre 2026, première version** : artefact sur claude.ai, avec la progression synchronisée via le compte Claude.
 - **25 octobre 2026, version web autonome (PWA)** : installable, hors ligne, transfert entre appareils. Livrée en zip pour Netlify Drop, puis en dossier projet pour Claude Code, avec tests et déploiement GitHub Pages.
-
 - **1er novembre 2026, Défi chrono** : mode jeu à 4 niveaux (Découverte, Voyageur, Explorateur, Vexillologue), dans les deux sens, avec chrono, score, séries et records. Séparé de la répétition espacée pour ne pas fausser le planning. Publication sur GitHub Pages, dépôt `ghitard/drapeaux-du-monde`.
+- **6 novembre 2026** : Israël (IL) retiré de la liste, à la demande de Ghita : 230 drapeaux, 193 pays. Les cartes `IL_f` / `IL_r` d'une progression existante sont ignorées au chargement et à l'import. Sosies recalculés avec `scripts/tools`. Correction du Défi : après une erreur, ta réponse et la bonne réponse s'affichent côte à côte, chacune avec son drapeau.
 
 ## À faire plus tard (seulement sur demande)
 - **Synchro automatique téléphone ↔ PC.** Il faut un service en ligne. Deux pistes :

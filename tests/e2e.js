@@ -102,7 +102,33 @@ async function noHorizontalOverflow(page) {
     const end = await pa.evaluate(() => ({ done: !!(__det.defi() && __det.defi().done), score: __det.defi().score, ok: __det.defi().ok, best: __det.defiPrefs().best['f-3'] }));
     check(end.done && end.ok === 9 && end.score > 0 && end.best === end.score, `défi terminé : 9/10, ${end.score} points, record enregistré`);
     await pa.screenshot({ path: path.join(SHOTS, 'defi-resultats.png') });
-    await pa.click('[data-action="defi"]'); await pa.click('[data-defi-lvl="4"]'); await pa.click('[data-action="defi-start"]'); await pa.waitForTimeout(300);
+    // Correction du défi : ta réponse et la bonne réponse, chacune avec son propre drapeau (deux sens + saisie)
+    const figsMatch = () => pa.evaluate(() => {
+      const D = __det.defi(), q = D.q, p = D.p;
+      const mine = document.querySelector('.dfb [data-fig="mine"]'), good = document.querySelector('.dfb [data-fig="good"]');
+      const src = el => el && el.querySelector('img').getAttribute('src');
+      const capOk = (el, c) => !el.querySelector('figcaption') || el.querySelector('figcaption').textContent.includes(__det.BY[c].n);
+      const goodOk = good && good.dataset.code === q.code && src(good) === 'flags/' + q.code + '.svg' && capOk(good, q.code);
+      const mineOk = p.chosen && p.chosen !== q.code ? (mine && mine.dataset.code === p.chosen && src(mine) === 'flags/' + p.chosen + '.svg' && capOk(mine, p.chosen)) : !mine;
+      return { ok: !!(goodOk && mineOk), q: q.code, chosen: p.chosen };
+    });
+    await pa.click('[data-action="defi"]');
+    for (const dir of ['f', 'r']) {
+      await pa.click(`[data-defi-dir="${dir}"]`); await pa.click('[data-defi-lvl="3"]'); await pa.click('[data-action="defi-start"]'); await pa.waitForTimeout(300);
+      const wrong = await pa.evaluate(() => __det.defi().q.options.find(x => x !== __det.defi().q.code));
+      await pa.click(`[data-defi-answer="${wrong}"]`); await pa.waitForTimeout(100);
+      const r = await figsMatch();
+      check(r.ok, `défi ${dir === 'f' ? 'drapeau → nom' : 'nom → drapeau'} : après une erreur, chaque drapeau a son nom (${r.q} / ${r.chosen})`);
+      if (dir === 'f') await pa.screenshot({ path: path.join(SHOTS, 'defi-erreur.png') });
+      await pa.click('[data-action="defi-quit"]');
+    }
+    await pa.click('[data-defi-dir="f"]'); await pa.click('[data-defi-lvl="4"]'); await pa.click('[data-action="defi-start"]'); await pa.waitForTimeout(300);
+    const otherName = await pa.evaluate(() => { const q = __det.defi().q.code; const o = (__det.BY[q].nb || []).find(c => c !== q) || (q === 'FR' ? 'IT' : 'FR'); return __det.BY[o].n; });
+    await pa.fill('#defi-input', otherName); await pa.click('#defi-form button[type=submit]'); await pa.waitForTimeout(100);
+    const rt = await figsMatch();
+    check(rt.ok && rt.chosen, `défi saisie : le pays tapé (${otherName}) s’affiche avec son propre drapeau`);
+    await pa.click('[data-action="defi-quit"]');
+    await pa.click('[data-defi-lvl="4"]'); await pa.click('[data-action="defi-start"]'); await pa.waitForTimeout(300);
     const name = await pa.evaluate(() => __det.BY[__det.defi().q.code].n);
     await pa.fill('#defi-input', name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
     await pa.click('#defi-form button[type=submit]'); await pa.waitForTimeout(100);
@@ -133,6 +159,18 @@ async function noHorizontalOverflow(page) {
     pb.on('pageerror', e => pageErrors.push('ordinateur : ' + e.message));
     await pb.goto(URL); await pb.waitForTimeout(500);
     await pb.click('[data-action="start-daily"]'); await pb.waitForTimeout(300);
+    {
+      const q = await pb.evaluate(() => __det.session().q);
+      const wrong = q.options.find(x => x !== q.code);
+      await pb.click(`[data-answer="${wrong}"]`); await pb.waitForTimeout(100);
+      const okCmp = await pb.evaluate(([code, wrong]) => {
+        const m = document.querySelector('.compare .mine'), g = document.querySelector('.compare .good');
+        return !!(m && g && m.querySelector('img').getAttribute('src') === 'flags/' + wrong + '.svg' && m.textContent.includes(__det.BY[wrong].n)
+          && g.querySelector('img').getAttribute('src') === 'flags/' + code + '.svg' && g.textContent.includes(__det.BY[code].n));
+      }, [q.code, wrong]);
+      check(okCmp, 'séance : après une erreur, ta réponse et la bonne réponse ont chacune leur drapeau');
+      await pb.click('[data-action="continue"]');
+    }
     for (let i = 0; i < 3; i++) { const c = await pb.evaluate(() => __det.session().q.code); await pb.click(`[data-answer="${c}"]`); await pb.click('[data-action="continue"]'); }
     await pb.click('[data-action="quit"]'); await pb.waitForTimeout(200); await pb.click('[data-action="home"]');
     const own = await pb.evaluate(() => Object.keys(__det.state().cards));
@@ -151,6 +189,37 @@ async function noHorizontalOverflow(page) {
     await pb.reload(); await pb.waitForTimeout(400);
     check(await pb.evaluate(() => Object.keys(__det.state().cards).length) === union.size, 'progression conservée après rechargement');
     await pb.screenshot({ path: path.join(SHOTS, 'accueil-ordinateur.png') });
+
+    // ── Ancienne progression contenant des cartes IL (drapeau retiré) ──
+    console.log('Ancienne progression avec IL');
+    const legacy = JSON.parse(JSON.stringify(exported.state));
+    const sample = Object.values(legacy.cards)[0];
+    legacy.cards.IL_f = Object.assign({}, sample); legacy.cards.IL_r = Object.assign({}, sample);
+    legacy.conf['IL~AR'] = 3; legacy.conf['AR~IL'] = 1;
+    const E = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const legacyErrors = [];
+    await E.addInitScript(s => { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('drapeaux-en-tete:v1', s); sessionStorage.setItem('seeded', '1'); } }, JSON.stringify(legacy));
+    const pe = await E.newPage();
+    pe.on('pageerror', e => legacyErrors.push(e.message));
+    await pe.goto(URL); await pe.waitForTimeout(500);
+    const hasIL = () => pe.evaluate(() => { const st = __det.state(); return Object.keys(st.cards).some(k => k.startsWith('IL_')) || Object.keys(st.conf).some(k => k.split('~').includes('IL')); });
+    check(!(await hasIL()) && await pe.evaluate(() => !__det.BY.IL), 'cartes IL ignorées au chargement');
+    for (const tab of ['collection', 'stats', 'settings', 'home']) { await pe.click(`[data-tab="${tab}"]`); await pe.waitForTimeout(250); }
+    const startBtn = (await pe.$('[data-action="start-daily"]')) || (await pe.$('[data-action="start-weak"]:not([disabled])'));
+    await startBtn.click(); await pe.waitForTimeout(200);
+    check(await answerAll(pe, 40) > 0, 'séance avec une ancienne progression : sans carte IL');
+    const ilFile = path.join(os.tmpdir(), 'drapeaux-export-il.json');
+    fs.writeFileSync(ilFile, JSON.stringify({ app: 'drapeaux-en-tete', v: 1, exportedAt: new Date().toISOString(), state: legacy }));
+    await pe.click('[data-action="home"]').catch(() => {}); await pe.click('[data-tab="settings"]'); await pe.waitForTimeout(200);
+    const ch = pe.waitForEvent('filechooser'); await pe.click('[data-action="pick-import"]'); await (await ch).setFiles(ilFile);
+    await pe.waitForTimeout(300); if (await pe.$('#confirm-ok')) await pe.click('#confirm-ok'); await pe.waitForTimeout(300);
+    check(!(await hasIL()), 'import d’un fichier contenant des cartes IL : ignorées');
+    const dl2 = pe.waitForEvent('download'); await pe.click('[data-tab="settings"]'); await pe.click('[data-action="send-progress"]');
+    const ilOut = path.join(os.tmpdir(), 'drapeaux-export-il-out.json'); await (await dl2).saveAs(ilOut);
+    const outState = JSON.parse(fs.readFileSync(ilOut, 'utf8')).state;
+    check(!Object.keys(outState.cards).some(k => k.startsWith('IL_')), 'export : aucune carte IL');
+    check(legacyErrors.length === 0, 'ancienne progression avec IL : aucune erreur JavaScript' + (legacyErrors.length ? ' : ' + legacyErrors.join(' | ') : ''));
+    await E.close();
 
     // ── Rendu clair / sombre, pas de débordement ──
     console.log('Rendu');
